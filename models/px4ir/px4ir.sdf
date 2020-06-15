@@ -443,6 +443,8 @@
       <robotNamespace/>
       <pubRate>20</pubRate>
       <baroTopic>/baro</baroTopic>
+      <noiseMean>0</noiseMean>
+      <noiseStdDev>1</noiseStdDev>
     </plugin>
     <plugin name='mavlink_interface' filename='libgazebo_mavlink_interface.so'>
       <robotNamespace/>

@@ -85,6 +85,20 @@ void BarometerPlugin::getSdfParams(sdf::ElementPtr sdf)
     baro_topic_ = kDefaultBarometerTopic;
     gzwarn << "[gazebo_barometer_plugin] Using default barometer topic " << baro_topic_ << "\n";
   }
+
+  if (sdf->HasElement("noiseMean")) {
+    noise_mean_ = sdf->GetElement("noiseMean")->Get<double>();
+  } else {
+    noise_mean_ = kDefaultNoiseMean;
+    gzwarn << "[gazebo_barometer_plugin] Using default noise mean " << noise_mean_ << "\n";
+  }
+
+  if (sdf->HasElement("noiseStdDev")) {
+    noise_std_dev_ = sdf->GetElement("noiseStdDev")->Get<double>();
+  } else {
+    noise_std_dev_ = kDefaultNoiseStdDev;
+    gzwarn << "[gazebo_barometer_plugin] Using default noise standard deviation " << noise_std_dev_ << "\n";
+  }
 }
 
 void BarometerPlugin::Load(physics::ModelPtr model, sdf::ElementPtr sdf)
@@ -112,7 +126,7 @@ void BarometerPlugin::Load(physics::ModelPtr model, sdf::ElementPtr sdf)
 
   pub_baro_ = node_handle_->Advertise<sensor_msgs::msgs::Pressure>("~/" + model_->GetName() + baro_topic_, 10);
 
-  standard_normal_distribution_ = std::normal_distribution<double>(0.0, 1.0);
+  standard_normal_distribution_ = std::normal_distribution<double>(noise_mean_, noise_std_dev_);
   gravity_W_ = world_->Gravity();
 }
 

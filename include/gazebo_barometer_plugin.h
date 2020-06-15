@@ -62,6 +62,8 @@ namespace gazebo {
   static constexpr auto kDefaultBarometerTopic = "/baro";
   static constexpr auto kDefaultPubRate = 50.0;  // [Hz]. Note: averages the supported Baro device ODR in PX4
   static constexpr auto kDefaultAltHome = 488.0; // meters
+  static constexpr auto kDefaultNoiseMean= 0.0;
+  static constexpr auto kDefaultNoiseStdDev = 10;
 
   class BarometerPlugin : public ModelPlugin {
   public:
@@ -99,6 +101,10 @@ namespace gazebo {
     // state variables for baro pressure sensor random noise generator
     double baro_rnd_y2_;
     bool baro_rnd_use_last_;
+
+    //Noise Variables
+    double noise_mean_;
+    double noise_std_dev_;
   }; // class BarometerPlugin
 } // namespace gazebo
 #endif // _GAZEBO_BAROMETER_PLUGIN_HH_
