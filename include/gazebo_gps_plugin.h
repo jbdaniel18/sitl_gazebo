@@ -51,15 +51,20 @@
 
 namespace gazebo
 {
-static constexpr double kDefaultUpdateRate = 5.0;               // hz
-static constexpr double kDefaultGpsXYRandomWalk = 2.0;          // (m/s) / sqrt(hz)
-static constexpr double kDefaultGpsZRandomWalk = 4.0;           // (m/s) / sqrt(hz)
-static constexpr double kDefaultGpsXYNoiseDensity = 2.0e-4;     // (m) / sqrt(hz)
-static constexpr double kDefaultGpsZNoiseDensity = 4.0e-4;      // (m) / sqrt(hz)
-static constexpr double kDefaultGpsVXYNoiseDensity = 0.2;       // (m/s) / sqrt(hz)
-static constexpr double kDefaultGpsVZNoiseDensity = 0.4;        // (m/s) / sqrt(hz)
 
-class GAZEBO_VISIBLE GpsPlugin : public SensorPlugin
+  static constexpr auto kDefaultGpsCorellationTime = 60.0;   // s
+  static constexpr auto kDefaultGpsXYRandomWalk = 2.0;       // (m/s) / sqrt(hz)
+  static constexpr auto kDefaultGpsZRandomWalk = 4.0;       // (m/s) / sqrt(hz)
+  static constexpr auto kDefaultGpsXYNoiseDensity = 2e-4;    // (m) / sqrt(hz)
+  static constexpr auto kDefaultGpsZNoiseDensity = 4e-4;     // (m) / sqrt(hz)
+  static constexpr auto kDefaultGpsVXYNoiseDensity = 2e-1;   // (m/s) / sqrt(hz)
+  static constexpr auto kDefaultGpsVZNoiseDensity = 4e-1;    // (m/s) / sqrt(hz)
+
+  // gps delay related
+  static constexpr auto kDefaultGpsUpdateInterval = 0.2;     // 5hz
+  static constexpr auto kDefaultGpsDelay = 0.12;             // 120 ms
+
+class GAZEBO_VISIBLE GpsPlugin : public ModelPlugin
 {
 public:
   GpsPlugin();
@@ -107,8 +112,10 @@ private:
   double world_longitude_ = 0.0;
   double world_altitude_ = 0.0;
 
+
   // gps delay related
-  static constexpr double gps_delay = 0.12;           // 120 ms
+  double gps_update_interval_ = 0.2; // 5hz
+  double gps_delay_ = 0.12;           // 120 ms
   static constexpr int gps_buffer_size_max = 1000;
   std::queue<sensor_msgs::msgs::SITLGps> gps_delay_buffer;
 
@@ -127,10 +134,11 @@ private:
   static constexpr const double gps_corellation_time_ = 60.0;    // s
   double gps_xy_random_walk_;
   double gps_z_random_walk_;
-  double gps_xy_noise_density_;
-  double gps_z_noise_density_;
-  double gps_vxy_noise_density_;
-  double gps_vz_noise_density_;
+  double gps_xy_noise_density_;    // (m) / sqrt(hz)
+  double gps_z_noise_density_;     // (m) / sqrt(hz)
+  double gps_vxy_noise_density_;   // (m/s) / sqrt(hz)
+  double gps_vz_noise_density_;    // (m/s) / sqrt(hz)
+
 };     // class GAZEBO_VISIBLE GpsPlugin
 }      // namespace gazebo
 #endif // _GAZEBO_GPS_PLUGIN_HH_
