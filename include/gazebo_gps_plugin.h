@@ -49,6 +49,19 @@
 
 namespace gazebo
 {
+
+  static constexpr auto kDefaultGpsCorellationTime = 60.0;   // s
+  static constexpr auto kDefaultGpsXYRandomWalk = 2.0;       // (m/s) / sqrt(hz)
+  static constexpr auto kDefaultGpsZRandomWalk = 4.0;       // (m/s) / sqrt(hz)
+  static constexpr auto kDefaultGpsXYNoiseDensity = 2e-4;    // (m) / sqrt(hz)
+  static constexpr auto kDefaultGpsZNoiseDensity = 4e-4;     // (m) / sqrt(hz)
+  static constexpr auto kDefaultGpsVXYNoiseDensity = 2e-1;   // (m/s) / sqrt(hz)
+  static constexpr auto kDefaultGpsVZNoiseDensity = 4e-1;    // (m/s) / sqrt(hz)
+
+  // gps delay related
+  static constexpr auto kDefaultGpsUpdateInterval = 0.2;     // 5hz
+  static constexpr auto kDefaultGpsDelay = 0.12;             // 120 ms
+
 class GAZEBO_VISIBLE GpsPlugin : public ModelPlugin
 {
 public:
@@ -113,9 +126,10 @@ private:
 
   static constexpr const double earth_radius = 6353000.0;      // meters
 
+
   // gps delay related
-  static constexpr double gps_update_interval_ = 0.2; // 5hz
-  static constexpr double gps_delay = 0.12;           // 120 ms
+  double gps_update_interval_ = 0.2; // 5hz
+  double gps_delay_ = 0.12;           // 120 ms
   static constexpr int gps_buffer_size_max = 1000;
   std::queue<sensor_msgs::msgs::SITLGps> gps_delay_buffer;
 
@@ -131,13 +145,15 @@ private:
   double std_z;     // meters
   std::default_random_engine rand_;
   std::normal_distribution<float> randn_;
-  static constexpr double gps_corellation_time = 60.0;    // s
-  static constexpr double gps_xy_random_walk = 2.0;       // (m/s) / sqrt(hz)
-  static constexpr double gps_z_random_walk = 4.0;        // (m/s) / sqrt(hz)
-  static constexpr double gps_xy_noise_density = 2e-4;    // (m) / sqrt(hz)
-  static constexpr double gps_z_noise_density = 4e-4;     // (m) / sqrt(hz)
-  static constexpr double gps_vxy_noise_density = 2e-1;   // (m/s) / sqrt(hz)
-  static constexpr double gps_vz_noise_density = 4e-1;    // (m/s) / sqrt(hz)
+
+  double gps_corellation_time_;    // s
+  double gps_xy_random_walk_;       // (m/s) / sqrt(hz)
+  double gps_z_random_walk_;        // (m/s) / sqrt(hz)
+  double gps_xy_noise_density_;    // (m) / sqrt(hz)
+  double gps_z_noise_density_;     // (m) / sqrt(hz)
+  double gps_vxy_noise_density_;   // (m/s) / sqrt(hz)
+  double gps_vz_noise_density_;    // (m/s) / sqrt(hz)
+
 };     // class GAZEBO_VISIBLE GpsPlugin
 }      // namespace gazebo
 #endif // _GAZEBO_GPS_PLUGIN_HH_

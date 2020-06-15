@@ -81,6 +81,75 @@ void GpsPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   } else {
     gps_noise_ = false;
   }
+  gzwarn << "[gazebo_gps_plugin] Are we noisy?";
+
+  if(gps_noise_){
+    gzwarn << "[gazebo_gps_plugin] We be noisy!";
+
+
+    if (_sdf->HasElement("CorrelationTime")) {
+      getSdfParam<double>(_sdf, "CorrelationTime", gps_corellation_time_, gps_corellation_time_);
+          gzwarn << "[gazebo_gps_plugin] Using Set Correllation Time";
+    } else {
+      gps_corellation_time_ = kDefaultGpsCorellationTime;
+    }
+
+    if (_sdf->HasElement("XYRandomWalk")) {
+      getSdfParam<double>(_sdf, "XYRandomWalk", gps_xy_random_walk_, gps_xy_random_walk_);
+          gzwarn << "[gazebo_gps_plugin] Using Set XYRandomWalk";
+    } else {
+      gps_xy_random_walk_ = kDefaultGpsXYRandomWalk;
+    }
+
+    if (_sdf->HasElement("ZRandomWalk")) {
+      getSdfParam<double>(_sdf, "XYRandomWalk", gps_z_random_walk_, gps_z_random_walk_);
+          gzwarn << "[gazebo_gps_plugin] Using Set ZRandomWalk";
+    } else {
+      gps_z_random_walk_ = kDefaultGpsZRandomWalk;
+    }
+
+    if (_sdf->HasElement("XYNoiseDensity")) {
+      getSdfParam<double>(_sdf, "XYNoiseDensity", gps_xy_noise_density_, gps_xy_noise_density_);
+          gzwarn << "[gazebo_gps_plugin] Using Set XYNoiseDensity";
+    } else {
+      gps_xy_noise_density_ = kDefaultGpsXYNoiseDensity;
+    }
+
+    if (_sdf->HasElement("ZNoiseDensity")) {
+      getSdfParam<double>(_sdf, "ZNoiseDensity", gps_z_noise_density_, gps_z_noise_density_);
+          gzwarn << "[gazebo_gps_plugin] Using Set ZNoiseDensity";
+    } else {
+      gps_z_noise_density_ = kDefaultGpsZNoiseDensity;
+    }
+
+    if (_sdf->HasElement("VXYNoiseDensity")) {
+      getSdfParam<double>(_sdf, "VXYNoiseDensity", gps_vxy_noise_density_, gps_vxy_noise_density_);
+          gzwarn << "[gazebo_gps_plugin] Using Set VXYNoiseDensity";
+    } else {
+      gps_vxy_noise_density_ = kDefaultGpsVXYNoiseDensity;
+    }
+
+    if (_sdf->HasElement("VZNoiseDensity")) {
+      getSdfParam<double>(_sdf, "VZNoiseDensity", gps_vz_noise_density_, gps_vz_noise_density_);
+          gzwarn << "[gazebo_gps_plugin] Using Set VZNoiseDensity";
+    } else {
+      gps_vz_noise_density_ = kDefaultGpsVZNoiseDensity;
+    }
+  }
+
+  if (_sdf->HasElement("UpdateInterval")) {
+    getSdfParam<double>(_sdf, "UpdateInterval", gps_update_interval_, gps_update_interval_);
+        gzwarn << "[gazebo_gps_plugin] Using Set UpdateInterval";
+  } else {
+    gps_update_interval_ = kDefaultGpsUpdateInterval;
+  }
+
+  if (_sdf->HasElement("Delay")) {
+    getSdfParam<double>(_sdf, "Delay", gps_delay_, gps_delay_);
+        gzwarn << "[gazebo_gps_plugin] Using Set Delay";
+  } else {
+    gps_delay_ = kDefaultGpsDelay;
+  }
 
   bool world_has_origin = checkWorldHomePosition(world_);
 
@@ -168,15 +237,15 @@ void GpsPlugin::OnUpdate(const common::UpdateInfo&){
 
   // update noise parameters if gps_noise_ is set
   if (gps_noise_) {
-    noise_gps_pos.X() = gps_xy_noise_density * sqrt(dt) * randn_(rand_);
-    noise_gps_pos.Y() = gps_xy_noise_density * sqrt(dt) * randn_(rand_);
-    noise_gps_pos.Z() = gps_z_noise_density * sqrt(dt) * randn_(rand_);
-    noise_gps_vel.X() = gps_vxy_noise_density * sqrt(dt) * randn_(rand_);
-    noise_gps_vel.Y() = gps_vxy_noise_density * sqrt(dt) * randn_(rand_);
-    noise_gps_vel.Z() = gps_vz_noise_density * sqrt(dt) * randn_(rand_);
-    random_walk_gps.X() = gps_xy_random_walk * sqrt(dt) * randn_(rand_);
-    random_walk_gps.Y() = gps_xy_random_walk * sqrt(dt) * randn_(rand_);
-    random_walk_gps.Z() = gps_z_random_walk * sqrt(dt) * randn_(rand_);
+    noise_gps_pos.X() = gps_xy_noise_density_ * sqrt(dt) * randn_(rand_);
+    noise_gps_pos.Y() = gps_xy_noise_density_ * sqrt(dt) * randn_(rand_);
+    noise_gps_pos.Z() = gps_z_noise_density_ * sqrt(dt) * randn_(rand_);
+    noise_gps_vel.X() = gps_vxy_noise_density_ * sqrt(dt) * randn_(rand_);
+    noise_gps_vel.Y() = gps_vxy_noise_density_ * sqrt(dt) * randn_(rand_);
+    noise_gps_vel.Z() = gps_vz_noise_density_ * sqrt(dt) * randn_(rand_);
+    random_walk_gps.X() = gps_xy_random_walk_ * sqrt(dt) * randn_(rand_);
+    random_walk_gps.Y() = gps_xy_random_walk_ * sqrt(dt) * randn_(rand_);
+    random_walk_gps.Z() = gps_z_random_walk_ * sqrt(dt) * randn_(rand_);
   }
   else {
     noise_gps_pos.X() = 0.0;
@@ -191,9 +260,9 @@ void GpsPlugin::OnUpdate(const common::UpdateInfo&){
   }
 
   // gps bias integration
-  gps_bias.X() += random_walk_gps.X() * dt - gps_bias.X() / gps_corellation_time;
-  gps_bias.Y() += random_walk_gps.Y() * dt - gps_bias.Y() / gps_corellation_time;
-  gps_bias.Z() += random_walk_gps.Z() * dt - gps_bias.Z() / gps_corellation_time;
+  gps_bias.X() += random_walk_gps.X() * dt - gps_bias.X() / gps_corellation_time_;
+  gps_bias.Y() += random_walk_gps.Y() * dt - gps_bias.Y() / gps_corellation_time_;
+  gps_bias.Z() += random_walk_gps.Z() * dt - gps_bias.Z() / gps_corellation_time_;
 
   // reproject position with noise into geographic coordinates
   auto pos_with_noise = pos_W_I + noise_gps_pos + gps_bias;
@@ -230,7 +299,7 @@ void GpsPlugin::OnUpdate(const common::UpdateInfo&){
         break;
       }
       // remove data that is too old or if buffer size is too large
-      if (gps_current_delay > gps_delay) {
+      if (gps_current_delay > gps_delay_) {
         gps_delay_buffer.pop();
         // remove data if buffer too large
       } else if (gps_delay_buffer.size() > gps_buffer_size_max) {
