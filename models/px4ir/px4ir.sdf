@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <sdf version='1.6'>
   <model name='px4ir'>
     <link name='base_link'>
@@ -51,7 +52,7 @@
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
-    <link name='/imu_link'>
+    <link name='/imu_link1'>
       <pose frame=''>0 0 0 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 0 0 0 -0 0</pose>
@@ -66,8 +67,41 @@
         </inertia>
       </inertial>
     </link>
-    <joint name='/imu_joint' type='revolute'>
-      <child>/imu_link</child>
+    <joint name='/imu_joint1' type='revolute'>
+      <child>/imu_link1</child>
+      <parent>base_link</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+        <link name='/imu_link2'>
+      <pose frame=''>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <mass>0.015</mass>
+        <inertia>
+          <ixx>1e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1e-05</iyy>
+          <iyz>0</iyz>
+          <izz>1e-05</izz>
+        </inertia>
+      </inertial>
+    </link>
+    <joint name='/imu_joint2' type='revolute'>
+      <child>/imu_link2</child>
       <parent>base_link</parent>
       <axis>
         <xyz>1 0 0</xyz>
@@ -568,10 +602,23 @@
       </control_channels>
     </plugin>
     <static>0</static>
-    <plugin name='rotors_gazebo_imu_plugin' filename='libgazebo_imu_plugin.so'>
+    <plugin name='rotors_gazebo_imu_plugin1' filename='libgazebo_imu_plugin.so'>
       <robotNamespace/>
-      <linkName>/imu_link</linkName>
+      <linkName>/imu_link1</linkName>
       <imuTopic>/imu</imuTopic>
+      <gyroscopeNoiseDensity>0.006</gyroscopeNoiseDensity>
+      <gyroscopeRandomWalk>3.8785e-05</gyroscopeRandomWalk>
+      <gyroscopeBiasCorrelationTime>1000.0</gyroscopeBiasCorrelationTime>
+      <gyroscopeTurnOnBiasSigma>0.0087</gyroscopeTurnOnBiasSigma>
+      <accelerometerNoiseDensity>0.00150</accelerometerNoiseDensity>
+      <accelerometerRandomWalk>0.006</accelerometerRandomWalk>
+      <accelerometerBiasCorrelationTime>300.0</accelerometerBiasCorrelationTime>
+      <accelerometerTurnOnBiasSigma>0.196</accelerometerTurnOnBiasSigma>
+    </plugin>
+      <plugin name='rotors_gazebo_imu_plugin2' filename='libgazebo_imu_plugin.so'>
+      <robotNamespace/>
+      <linkName>/imu_link2</linkName>
+      <imuTopic>/imu2</imuTopic>
       <gyroscopeNoiseDensity>0.006</gyroscopeNoiseDensity>
       <gyroscopeRandomWalk>3.8785e-05</gyroscopeRandomWalk>
       <gyroscopeBiasCorrelationTime>1000.0</gyroscopeBiasCorrelationTime>
