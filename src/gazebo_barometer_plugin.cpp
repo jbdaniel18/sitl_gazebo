@@ -99,6 +99,13 @@ void BarometerPlugin::getSdfParams(sdf::ElementPtr sdf)
     noise_std_dev_ = kDefaultNoiseStdDev;
     gzwarn << "[gazebo_barometer_plugin] Using default noise standard deviation " << noise_std_dev_ << "\n";
   }
+
+  if (sdf->HasElement("pascalsNoise")) {
+    noise_pascals_ = sdf->GetElement("pascalsNoise")->Get<double>();
+  } else {
+    noise_pascals_ = kDefaultPascalsNoise;
+    gzwarn << "[gazebo_barometer_plugin] Using default Pascals Noise " << noise_pascals_ << "\n";
+  }
 }
 
 void BarometerPlugin::Load(physics::ModelPtr model, sdf::ElementPtr sdf)
@@ -180,8 +187,8 @@ void BarometerPlugin::OnUpdate(const common::UpdateInfo&)
       baro_rnd_use_last_ = false;
     }
 
-    // Apply 1 Pa RMS noise
-    float abs_pressure_noise = 1.0f * (float)y1;
+    // Apply noise_pascals (default 1) Pa RMS noise
+    float abs_pressure_noise = noise_pascals_ * (float)y1;
     absolute_pressure += abs_pressure_noise;
 
     // convert to hPa

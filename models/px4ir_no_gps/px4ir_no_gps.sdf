@@ -451,22 +451,6 @@
       <motorSpeedPubTopic>/motor_speed/3</motorSpeedPubTopic>
       <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
     </plugin>
-    <plugin name='gps_plugin' filename='libgazebo_gps_plugin.so'>
-      <!-- ublox Neo-M8N GPS/GLONASS receiver -->
-      <!--No noise or delay information available-->
-      <robotNamespace/>
-      <gpsNoise>1</gpsNoise>
-      <CorrelationTime>60.0</CorrelationTime>
-      <XYRandomWalk>2.0</XYRandomWalk>
-      <ZRandomWalk>4.0</ZRandomWalk>
-      <XYNoiseDensity>0.002</XYNoiseDensity>
-      <ZNoiseDensity>0.004</ZNoiseDensity>
-      <VXYNoiseDensity>0.002</VXYNoiseDensity>
-      <VZNoiseDensity>0.004</VZNoiseDensity>
-      <!-- 5 Hz -->
-      <UpdateInterval>0.2</UpdateInterval>
-      <Delay>0.12</Delay>
-    </plugin>
     <plugin name='magnetometer_plugin' filename='libgazebo_magnetometer_plugin.so'>
       <!-- IST8310 -->
       <robotNamespace/>
@@ -490,7 +474,6 @@
     <plugin name='mavlink_interface' filename='libgazebo_mavlink_interface.so'>
       <robotNamespace/>
       <imuSubTopic>/imu</imuSubTopic>
-      <gpsSubTopic>/gps</gpsSubTopic>
       <magSubTopic>/mag</magSubTopic>
       <baroSubTopic>/baro</baroSubTopic>
       <mavlink_addr>INADDR_ANY</mavlink_addr>

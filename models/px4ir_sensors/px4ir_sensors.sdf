@@ -220,7 +220,7 @@
             <height>60</height>
           </image>
           <clip>
-            <!--Close Range Mode has an actual min of .1, but the sensor behaves funn when landed-->
+            <!--Close Range Mode has an actual min of .1, but the sensor behaves funny when landed-->
             <near>0.01</near>
             <far>5</far>
           </clip>
