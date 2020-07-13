@@ -102,73 +102,7 @@ void GpsPlugin::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf)
     gps_noise_ = false;
   }
 
-  if(gps_noise_){
-
-    if (_sdf->HasElement("CorrelationTime")) {
-      getSdfParam<double>(_sdf, "CorrelationTime", gps_corellation_time_, gps_corellation_time_);
-    } else {
-      gps_corellation_time_ = kDefaultGpsCorellationTime;
-      gzwarn << "[gazebo_gps_plugin] Using default correlation time" << gps_corellation_time_ << "\n";
-    }
-
-    if (_sdf->HasElement("XYRandomWalk")) {
-      getSdfParam<double>(_sdf, "XYRandomWalk", gps_xy_random_walk_, gps_xy_random_walk_);
-    } else {
-      gps_xy_random_walk_ = kDefaultGpsXYRandomWalk;
-      gzwarn << "[gazebo_gps_plugin] Using default xy random walk " << gps_xy_random_walk_ << "\n";
-    }
-
-    if (_sdf->HasElement("ZRandomWalk")) {
-      getSdfParam<double>(_sdf, "XYRandomWalk", gps_z_random_walk_, gps_z_random_walk_);
-    } else {
-      gps_z_random_walk_ = kDefaultGpsZRandomWalk;
-      gzwarn << "[gazebo_gps_plugin] Using default z random walk " << gps_z_random_walk_ << "\n";
-    }
-
-    if (_sdf->HasElement("XYNoiseDensity")) {
-      getSdfParam<double>(_sdf, "XYNoiseDensity", gps_xy_noise_density_, gps_xy_noise_density_);
-    } else {
-      gps_xy_noise_density_ = kDefaultGpsXYNoiseDensity;
-      gzwarn << "[gazebo_gps_plugin] Using default xy noise density " << gps_xy_noise_density_ << "\n";
-    }
-
-    if (_sdf->HasElement("ZNoiseDensity")) {
-      getSdfParam<double>(_sdf, "ZNoiseDensity", gps_z_noise_density_, gps_z_noise_density_);
-    } else {
-      gps_z_noise_density_ = kDefaultGpsZNoiseDensity;
-      gzwarn << "[gazebo_gps_plugin] Using default z noise density " << gps_z_noise_density_ << "\n";
-    }
-
-    if (_sdf->HasElement("VXYNoiseDensity")) {
-      getSdfParam<double>(_sdf, "VXYNoiseDensity", gps_vxy_noise_density_, gps_vxy_noise_density_);
-    } else {
-      gps_vxy_noise_density_ = kDefaultGpsVXYNoiseDensity;
-      gzwarn << "[gazebo_gps_plugin] Using default vxy noise " << gps_vxy_noise_density_ << "\n";
-    }
-
-    if (_sdf->HasElement("VZNoiseDensity")) {
-      getSdfParam<double>(_sdf, "VZNoiseDensity", gps_vz_noise_density_, gps_vz_noise_density_);
-    } else {
-      gps_vz_noise_density_ = kDefaultGpsVZNoiseDensity;
-      gzwarn << "[gazebo_gps_plugin] Using default vz noise density " << gps_vz_noise_density_ << "\n";
-    }
-  }
-
-  if (_sdf->HasElement("UpdateInterval")) {
-    getSdfParam<double>(_sdf, "UpdateInterval", gps_update_interval_, gps_update_interval_);
-  } else {
-    gps_update_interval_ = kDefaultGpsUpdateInterval;
-    gzwarn << "[gazebo_gps_plugin] Using default update interval " << gps_update_interval_ << "\n";
-  }
-
-  if (_sdf->HasElement("Delay")) {
-    getSdfParam<double>(_sdf, "Delay", gps_delay_, gps_delay_);
-  } else {
-    gps_delay_ = kDefaultGpsDelay;
-    gzwarn << "[gazebo_gps_plugin] Using default gps delay " << gps_delay_ << "\n";
-  }
-
-  bool world_has_origin = checkWorldHomePosition(world_);
+  const bool world_has_origin = checkWorldHomePosition(world_, world_latitude_, world_longitude_, world_altitude_);
 
   if (env_lat) {
     lat_home_ = std::stod(env_lat) * M_PI / 180.0;
@@ -401,7 +335,7 @@ void GpsPlugin::OnSensorUpdate()
         break;
       }
       // remove data that is too old or if buffer size is too large
-      if (gps_current_delay > gps_delay_) {
+      if (gps_current_delay >= gps_delay) {
         gps_delay_buffer.pop();
       // remove data if buffer too large
       } else if (gps_delay_buffer.size() > gps_buffer_size_max) {
