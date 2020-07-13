@@ -3,7 +3,7 @@
   <model name='px4ir_sensors'>
      <include>
      <!--Load quadcopter with gps and imu-->
-      <uri>model://px4ir</uri>
+      <uri>model://px4ir_no_gps</uri>
     </include>
 
  <!--From fpv_cam.sdf-->
