@@ -468,12 +468,13 @@
       <baroTopic>/baro</baroTopic>
       <noiseMean>0</noiseMean>
       <noiseStdDev>1</noiseStdDev>
-      <!-- Maximum error with supply voltage is 2.5 mbar ie 250 pascals-->
-      <pascalsNoise>250</pascalsNoise>
+      <!-- Maximum error with supply voltage is 2.5 mbar ie 250 pascals
+      <pascalsNoise>250</pascalsNoise> -->
     </plugin>
     <plugin name='mavlink_interface' filename='libgazebo_mavlink_interface.so'>
       <robotNamespace/>
       <imuSubTopic>/imu</imuSubTopic>
+      <gpsSubTopic>/gps</gpsSubTopic>
       <magSubTopic>/mag</magSubTopic>
       <baroSubTopic>/baro</baroSubTopic>
       <mavlink_addr>INADDR_ANY</mavlink_addr>
