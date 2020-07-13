@@ -113,6 +113,7 @@ private:
   double world_altitude_ = 0.0;
 
 
+
   // gps delay related
   double gps_update_interval_ = 0.2; // 5hz
   double gps_delay_ = 0.12;           // 120 ms
@@ -131,9 +132,10 @@ private:
   double std_z;     // meters
   std::default_random_engine rand_;
   std::normal_distribution<float> randn_;
-  static constexpr const double gps_corellation_time_ = 60.0;    // s
-  double gps_xy_random_walk_;
-  double gps_z_random_walk_;
+
+  double gps_corellation_time_;    // s
+  double gps_xy_random_walk_;       // (m/s) / sqrt(hz)
+  double gps_z_random_walk_;        // (m/s) / sqrt(hz)
   double gps_xy_noise_density_;    // (m) / sqrt(hz)
   double gps_z_noise_density_;     // (m) / sqrt(hz)
   double gps_vxy_noise_density_;   // (m/s) / sqrt(hz)

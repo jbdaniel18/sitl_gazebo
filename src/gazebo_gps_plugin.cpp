@@ -168,7 +168,7 @@ void GpsPlugin::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf)
     gzwarn << "[gazebo_gps_plugin] Using default gps delay " << gps_delay_ << "\n";
   }
 
-  const bool world_has_origin = checkWorldHomePosition(world_, world_latitude_, world_longitude_, world_altitude_);
+  bool world_has_origin = checkWorldHomePosition(world_);
 
   if (env_lat) {
     lat_home_ = std::stod(env_lat) * M_PI / 180.0;
