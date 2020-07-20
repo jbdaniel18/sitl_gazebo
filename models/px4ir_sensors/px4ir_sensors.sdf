@@ -1,14 +1,23 @@
 <?xml version="1.0" ?>
 <sdf version='1.5'>
+<!-- Important Note about Units
+     Gazebo uses metric units so distance is assumed to be in meters
+     and angles are all in radians -->
   <model name='px4ir_sensors'>
      <include>
-     <!--Load quadcopter with gps and imu-->
+     <!--Choose what base quad to add sensor suite to, iris and derivatives should work ie Iris and px4ir-->
       <uri>model://px4ir_no_gps</uri>
     </include>
 
+ <!-- To add a new sensor add a new model and then link it to the base with a joint
+      This model can be added below using the explicit definitions or using a uri like the import of the base copter-->
+
+ <!-- Plugin definitions are either in sitl_gazebo/src for the custom, PX4, and modified RotorS plugins these tend to be UAV specific-->
+ <!-- Base gazebo plugin source are either in gazebo_ros_pkgs-->
+
  <!--From fpv_cam.sdf-->
  <model name='baslar_cam'>
-      <pose>0 0 -.04 0 -67.5 0</pose>
+      <pose>0 0 -.04 0  1.57 0</pose>
       <link name='link'>
         <inertial>
           <mass>0.015</mass>
@@ -154,15 +163,20 @@
             <stddev>0.000</stddev>
           </noise>
         </camera>
+        <!-- This depth camera plugin was choosen in hopes of being lighter weight, rather then simulating 3 cameras like the plugin below
+             It puts out point cloud data and RGBD that is similar to the real realsense d435 -->
+        <!-- If you need infrared cameras or something similar to the realsense check out this plugin
+             https://github.com/pal-robotics/realsense_gazebo_plugin and tweak the values to match the d435i-->
         <plugin filename="libgazebo_ros_openni_kinect.so" name="camera_controller">
-          <cameraName>realsense_cam</cameraName>
+          <cameraName>camera</cameraName>
           <alwaysOn>true</alwaysOn>
           <updateRate>60</updateRate>
           <pointCloudCutoff>0.2</pointCloudCutoff>
           <pointCloudCutoffMax>10</pointCloudCutoffMax>
-          <imageTopicName>rgb/image_raw</imageTopicName>
-          <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
-          <depthImageTopicName>depth/image_raw</depthImageTopicName>
+          <imageTopicName>color/image_raw</imageTopicName>
+          <cameraInfoTopicName>color/camera_info</cameraInfoTopicName>
+          <!-- This topic matches the realsense, despite sounding rectified I don't think it is, do rectify in camera info was false on realsense-->
+          <depthImageTopicName>depth/image_rect_raw</depthImageTopicName>
           <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
           <pointCloudTopicName>depth/points</pointCloudTopicName>
           <frameName>realsense_cam_link</frameName>
@@ -189,7 +203,7 @@
     </joint>
 
   <model name="terabee_cam">
-      <pose>.05 0 -.05 0 -67.5 0</pose>
+      <pose>.05 0 -.05 0 1.57 0</pose>
     <link name="link">
       <inertial>
         <pose>0.01 0.025 0.025 0 0 0</pose>
@@ -214,29 +228,32 @@
       <sensor name="depth_camera" type="depth">
         <update_rate>20</update_rate>
         <camera>
-          <horizontal_fov>0.0174533</horizontal_fov>
+          <!-- 15 degree fov in radians-->
+          <horizontal_fov>0.261799</horizontal_fov>
           <image>
+            <!-- Keep This Square since TB output is square-->
             <format>R8G8B8</format>
             <width>80</width>
-            <height>60</height>
+            <height>80</height>
           </image>
           <clip>
-            <!--Close Range Mode has an actual min of .1, but the sensor behaves funny when landed-->
-            <near>0.01</near>
+            <!--Close Range Mode has an actual min of .1, but the sensor doesn't behave right when landed -->
+            <near>0.001</near>
             <far>5</far>
           </clip>
         </camera>
         <plugin filename="libgazebo_ros_openni_kinect.so" name="camera_controller">
-          <cameraName>terabee_cam</cameraName>
+          <cameraName>teraranger_evo_64px</cameraName>
           <alwaysOn>true</alwaysOn>
           <updateRate>20</updateRate>
-          <pointCloudCutoff>0.1</pointCloudCutoff>
+          <pointCloudCutoff>0.001</pointCloudCutoff>
           <pointCloudCutoffMax>10</pointCloudCutoffMax>
+          <!-- The actual terabee only has a point cloud and a depth image -->
           <imageTopicName>rgb/image_raw</imageTopicName>
           <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
-          <depthImageTopicName>depth/image_raw</depthImageTopicName>
+          <depthImageTopicName>depth/depth_image</depthImageTopicName>
           <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
-          <pointCloudTopicName>depth/points</pointCloudTopicName>
+          <pointCloudTopicName>depth/points_prefilt</pointCloudTopicName>
           <frameName>terabee_cam_link</frameName>
           <distortion_k1>0.0</distortion_k1>
           <distortion_k2>0.0</distortion_k2>
